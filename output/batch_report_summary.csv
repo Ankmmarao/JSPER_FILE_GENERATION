@@ -1,0 +1,11 @@
+Batch Processing Summary Report,,
+Batch ID,Total Cheques,Total Amount
+BATCH001,3,"245,000.00"
+BATCH002,3,"463,000.00"
+BATCH003,4,"779,000.00"
+BATCH004,3,"372,000.00"
+BATCH005,2,"597,000.00"
+Overall Summary,,
+Total Batches,5,
+Total Cheques,15,
+Overall Amount,"2,456,000.00",
