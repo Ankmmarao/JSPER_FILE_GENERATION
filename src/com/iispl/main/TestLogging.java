@@ -22,9 +22,9 @@ public class TestLogging {
         Map<String,Object> parameters=new HashMap<>();
         
         
-        JasperReportRunner.generateCSV(
-                "reports/batch_report_summary.jrxml",
-                "output/batch_report_summary.csv",
+        JasperReportRunner.generatePDF(
+                "reports/bank_summary_report.jrxml",
+                "output/bank_summary_report.pdf",
                 parameters
         );
     }
