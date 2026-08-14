@@ -1,0 +1,5 @@
+Cheque No,Customer,Account,Amount,Rejection Reason
+CHQ10003,Anil Kumar,ACC1003,45000.00,Insufficient Funds
+CHQ10006,Meera Iyer,ACC1006,18000.00,Signature Mismatch
+CHQ10010,Sara Khan,ACC1010,425000.00,Account Blocked
+CHQ10013,Sameer Khan,ACC1013,32000.00,Cheque Date Invalid
