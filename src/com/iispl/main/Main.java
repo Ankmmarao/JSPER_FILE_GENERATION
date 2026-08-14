@@ -36,9 +36,9 @@ public class Main {
     System.out.println();
         System.out.println("Generating CSV...");
         JasperReportRunner.generateCSV(
-                "reports/daily_cheque_report.jrxml",
-                "output/daily_cheque_report.csv",
-                parameters
+        		        "reports/daily_cheque_report.jrxml",
+        		        "output/daily_cheque_report.csv",
+        		        parameters
         );
 
 

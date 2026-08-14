@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jasperReport
+    xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://jasperreports.sourceforge.net/jasperreports
+        http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="high_value_cheque_report"
+    pageWidth="595"
+    pageHeight="842"
+    columnWidth="555"
+    leftMargin="20"
+    rightMargin="20"
+    topMargin="20"
+    bottomMargin="20">
+
+    <!-- Query -->
+
+    <queryString>
+        <![CDATA[
+            SELECT
+                cheque_number,
+                customer_name,
+                bank_name,
+                cheque_amount,
+                status
+            FROM cheque_transaction
+            WHERE cheque_amount >= 200000
+        ]]>
+    </queryString>
+
+
+    <!-- Fields -->
+
+    <field name="cheque_number"
+           class="java.lang.String"/>
+
+    <field name="customer_name"
+           class="java.lang.String"/>
+
+    <field name="bank_name"
+           class="java.lang.String"/>
+
+    <field name="cheque_amount"
+           class="java.math.BigDecimal"/>
+
+    <field name="status"
+           class="java.lang.String"/>
+
+
+    <!-- COUNT Variable -->
+
+    <variable name="TOTAL_CHEQUES"
+              class="java.lang.Integer"
+              calculation="Count">
+
+        <variableExpression>
+            <![CDATA[$F{cheque_number}]]>
+        </variableExpression>
+
+    </variable>
+
+
+    <!-- SUM Variable -->
+
+    <variable name="TOTAL_AMOUNT"
+              class="java.math.BigDecimal"
+              calculation="Sum">
+
+        <variableExpression>
+            <![CDATA[$F{cheque_amount}]]>
+        </variableExpression>
+
+    </variable>
+
+
+    <!-- Title -->
+
+    <title>
+        <band height="50">
+
+            <staticText>
+
+                <reportElement
+                    x="0"
+                    y="10"
+                    width="555"
+                    height="30"/>
+
+                <textElement textAlignment="Center">
+                    <font size="18" isBold="true"/>
+                </textElement>
+
+                <text>
+                    <![CDATA[High Value Cheque Report]]>
+                </text>
+
+            </staticText>
+
+        </band>
+    </title>
+
+
+    <!-- Column Header -->
+
+    <columnHeader>
+        <band height="30">
+
+            <staticText>
+                <reportElement
+                    x="0" y="0"
+                    width="90" height="30"/>
+                <text>
+                    <![CDATA[Cheque No]]>
+                </text>
+            </staticText>
+
+            <staticText>
+                <reportElement
+                    x="90" y="0"
+                    width="110" height="30"/>
+                <text>
+                    <![CDATA[Customer]]>
+                </text>
+            </staticText>
+
+            <staticText>
+                <reportElement
+                    x="200" y="0"
+                    width="100" height="30"/>
+                <text>
+                    <![CDATA[Bank]]>
+                </text>
+            </staticText>
+
+            <staticText>
+                <reportElement
+                    x="300" y="0"
+                    width="100" height="30"/>
+                <text>
+                    <![CDATA[Amount]]>
+                </text>
+            </staticText>
+
+            <staticText>
+                <reportElement
+                    x="400" y="0"
+                    width="100" height="30"/>
+                <text>
+                    <![CDATA[Status]]>
+                </text>
+            </staticText>
+
+        </band>
+    </columnHeader>
+
+
+    <!-- Detail -->
+
+    <detail>
+        <band height="30">
+
+            <textField>
+                <reportElement
+                    x="0" y="0"
+                    width="90" height="30"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{cheque_number}]]>
+                </textFieldExpression>
+            </textField>
+
+
+            <textField>
+                <reportElement
+                    x="90" y="0"
+                    width="110" height="30"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{customer_name}]]>
+                </textFieldExpression>
+            </textField>
+
+
+            <textField>
+                <reportElement
+                    x="200" y="0"
+                    width="100" height="30"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{bank_name}]]>
+                </textFieldExpression>
+            </textField>
+
+
+            <textField>
+                <reportElement
+                    x="300" y="0"
+                    width="100" height="30"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{cheque_amount}]]>
+                </textFieldExpression>
+            </textField>
+
+
+            <textField>
+                <reportElement
+                    x="400" y="0"
+                    width="100" height="30"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{status}]]>
+                </textFieldExpression>
+            </textField>
+
+        </band>
+    </detail>
+
+
+    <!-- Summary -->
+
+    <summary>
+        <band height="60">
+
+            <staticText>
+                <reportElement
+                    x="250" y="5"
+                    width="180" height="25"/>
+
+                <text>
+                    <![CDATA[Total High Value Cheques:]]>
+                </text>
+            </staticText>
+
+            <textField>
+                <reportElement
+                    x="430" y="5"
+                    width="80" height="25"/>
+
+                <textFieldExpression>
+                    <![CDATA[$V{TOTAL_CHEQUES}]]>
+                </textFieldExpression>
+            </textField>
+
+
+            <staticText>
+                <reportElement
+                    x="250" y="30"
+                    width="180" height="25"/>
+
+                <text>
+                    <![CDATA[Total Amount:]]>
+                </text>
+            </staticText>
+
+            <textField>
+                <reportElement
+                    x="430" y="30"
+                    width="100" height="25"/>
+
+                <textFieldExpression>
+                    <![CDATA[$V{TOTAL_AMOUNT}]]>
+                </textFieldExpression>
+            </textField>
+
+        </band>
+    </summary>
+
+</jasperReport>

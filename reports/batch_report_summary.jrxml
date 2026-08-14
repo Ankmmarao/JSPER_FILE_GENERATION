@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+    xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                        http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="batch_summary_report"
+    pageWidth="595"
+    pageHeight="842"
+    columnWidth="555"
+    leftMargin="20"
+    rightMargin="20"
+    topMargin="20"
+    bottomMargin="20">
+
+    <!-- =====================================================
+         QUERY
+         One record returned for each distinct batch.
+         ===================================================== -->
+    <queryString>
+        <![CDATA[
+            SELECT
+                batch_id,
+                COUNT(cheque_id) AS total_cheques,
+                COALESCE(SUM(cheque_amount), 0.00) AS total_amount
+            FROM cheque_transaction
+            WHERE batch_id IS NOT NULL
+            GROUP BY batch_id
+            ORDER BY batch_id
+        ]]>
+    </queryString>
+
+    <!-- =====================================================
+         FIELDS
+         ===================================================== -->
+    <field name="batch_id" class="java.lang.String"/>
+    <field name="total_cheques" class="java.lang.Long"/>
+    <field name="total_amount" class="java.math.BigDecimal"/>
+
+    <!-- =====================================================
+         VARIABLES
+         ===================================================== -->
+
+    <!--
+        Since the SQL query returns exactly one row per
+        distinct batch_id, counting batch_id gives the
+        correct total number of batches.
+    -->
+    <variable
+        name="TotalBatches"
+        class="java.lang.Long"
+        calculation="Count">
+
+        <variableExpression>
+            <![CDATA[$F{batch_id}]]>
+        </variableExpression>
+
+    </variable>
+
+    <!-- Total cheque records -->
+    <variable
+        name="TotalCheques"
+        class="java.lang.Long"
+        calculation="Sum">
+
+        <variableExpression>
+            <![CDATA[
+                $F{total_cheques} == null
+                ? 0L
+                : $F{total_cheques}
+            ]]>
+        </variableExpression>
+
+    </variable>
+
+    <!-- Overall cheque amount -->
+    <variable
+        name="OverallAmount"
+        class="java.math.BigDecimal"
+        calculation="Sum">
+
+        <variableExpression>
+            <![CDATA[
+                $F{total_amount} == null
+                ? java.math.BigDecimal.ZERO
+                : $F{total_amount}
+            ]]>
+        </variableExpression>
+
+    </variable>
+
+    <!-- =====================================================
+         TITLE
+         ===================================================== -->
+    <title>
+        <band height="40">
+
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="5"
+                    width="555"
+                    height="30"/>
+
+                <textElement textAlignment="Center">
+                    <font
+                        size="16"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Batch Processing Summary Report]]></text>
+            </staticText>
+
+        </band>
+    </title>
+
+    <!-- =====================================================
+         COLUMN HEADER
+         ===================================================== -->
+    <columnHeader>
+        <band height="25">
+
+            <!-- Batch ID -->
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="0"
+                    width="185"
+                    height="25"/>
+
+                <textElement textAlignment="Left">
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Batch ID]]></text>
+            </staticText>
+
+            <!-- Total Cheques -->
+            <staticText>
+                <reportElement
+                    x="185"
+                    y="0"
+                    width="170"
+                    height="25"/>
+
+                <textElement textAlignment="Right">
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Total Cheques]]></text>
+            </staticText>
+
+            <!-- Total Amount -->
+            <staticText>
+                <reportElement
+                    x="355"
+                    y="0"
+                    width="200"
+                    height="25"/>
+
+                <textElement textAlignment="Right">
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Total Amount]]></text>
+            </staticText>
+
+        </band>
+    </columnHeader>
+
+    <!-- =====================================================
+         DETAIL
+         One row per batch.
+         ===================================================== -->
+    <detail>
+        <band height="20">
+
+            <!-- Batch ID -->
+            <textField>
+                <reportElement
+                    x="0"
+                    y="0"
+                    width="185"
+                    height="20"/>
+
+                <textElement textAlignment="Left"/>
+
+                <textFieldExpression>
+                    <![CDATA[$F{batch_id}]]>
+                </textFieldExpression>
+
+            </textField>
+
+            <!-- Total Cheques -->
+            <textField>
+                <reportElement
+                    x="185"
+                    y="0"
+                    width="170"
+                    height="20"/>
+
+                <textElement textAlignment="Right"/>
+
+                <textFieldExpression>
+                    <![CDATA[
+                        $F{total_cheques} == null
+                        ? 0L
+                        : $F{total_cheques}
+                    ]]>
+                </textFieldExpression>
+
+            </textField>
+
+            <!-- Total Amount -->
+            <textField pattern="#,##0.00">
+                <reportElement
+                    x="355"
+                    y="0"
+                    width="200"
+                    height="20"/>
+
+                <textElement textAlignment="Right"/>
+
+                <textFieldExpression>
+                    <![CDATA[
+                        $F{total_amount} == null
+                        ? java.math.BigDecimal.ZERO
+                        : $F{total_amount}
+                    ]]>
+                </textFieldExpression>
+
+            </textField>
+
+        </band>
+    </detail>
+
+    <!-- =====================================================
+         SUMMARY
+         Designed to remain readable in CSV export.
+         ===================================================== -->
+    <summary>
+        <band height="100">
+
+            <!-- Overall Summary Heading -->
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="10"
+                    width="555"
+                    height="20"/>
+
+                <textElement>
+                    <font
+                        size="11"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Overall Summary]]></text>
+            </staticText>
+
+            <!-- Total Batches -->
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="35"
+                    width="185"
+                    height="20"/>
+
+                <textElement>
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Total Batches]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement
+                    x="185"
+                    y="35"
+                    width="170"
+                    height="20"/>
+
+                <textElement textAlignment="Right"/>
+
+                <textFieldExpression>
+                    <![CDATA[$V{TotalBatches}]]>
+                </textFieldExpression>
+
+            </textField>
+
+            <!-- Total Cheques -->
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="55"
+                    width="185"
+                    height="20"/>
+
+                <textElement>
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Total Cheques]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement
+                    x="185"
+                    y="55"
+                    width="170"
+                    height="20"/>
+
+                <textElement textAlignment="Right"/>
+
+                <textFieldExpression>
+                    <![CDATA[$V{TotalCheques}]]>
+                </textFieldExpression>
+
+            </textField>
+
+            <!-- Overall Amount -->
+            <staticText>
+                <reportElement
+                    x="0"
+                    y="75"
+                    width="185"
+                    height="20"/>
+
+                <textElement>
+                    <font
+                        size="10"
+                        isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Overall Amount]]></text>
+            </staticText>
+
+            <textField pattern="#,##0.00">
+                <reportElement
+                    x="185"
+                    y="75"
+                    width="170"
+                    height="20"/>
+
+                <textElement textAlignment="Right"/>
+
+                <textFieldExpression>
+                    <![CDATA[$V{OverallAmount}]]>
+                </textFieldExpression>
+
+            </textField>
+
+        </band>
+    </summary>
+
+</jasperReport>
