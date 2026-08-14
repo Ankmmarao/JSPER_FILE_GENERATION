@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                                  http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="micr_repair_report"
+              pageWidth="842"
+              pageHeight="595"
+              orientation="Landscape"
+              columnWidth="782"
+              leftMargin="30"
+              rightMargin="30"
+              topMargin="30"
+              bottomMargin="30">
+
+    <!--
+        Conditional style for MICR status.
+        When micr_status is INVALID, the MICR Status cell
+        is highlighted.
+    -->
+    <style name="MicrInvalidStyle" mode="Opaque">
+        <conditionalStyle>
+            <conditionExpression><![CDATA[
+                "INVALID".equals($F{micr_status})
+            ]]></conditionExpression>
+            <style backcolor="#FFCCCC"
+                   forecolor="#990000"
+                   isBold="true"/>
+        </conditionalStyle>
+    </style>
+
+    <!-- =====================================================
+         SQL QUERY
+         ===================================================== -->
+    <queryString>
+        <![CDATA[
+            SELECT
+                cheque_number,
+                bank_name,
+                branch_name,
+                micr_code,
+                cheque_amount,
+                micr_status
+            FROM cheque_transaction
+            WHERE micr_status = 'INVALID'
+            ORDER BY cheque_number
+        ]]>
+    </queryString>
+
+    <!-- =====================================================
+         FIELDS
+         ===================================================== -->
+    <field name="cheque_number" class="java.lang.String"/>
+    <field name="bank_name" class="java.lang.String"/>
+    <field name="branch_name" class="java.lang.String"/>
+    <field name="micr_code" class="java.lang.String"/>
+    <field name="cheque_amount" class="java.math.BigDecimal"/>
+    <field name="micr_status" class="java.lang.String"/>
+
+    <!-- =====================================================
+         TITLE
+         ===================================================== -->
+    <title>
+        <band height="50">
+
+            <staticText>
+                <reportElement x="0"
+                               y="0"
+                               width="782"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font size="18"
+                          isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[MICR Repair Report]]></text>
+            </staticText>
+
+        </band>
+    </title>
+
+    <!-- =====================================================
+         COLUMN HEADER
+         ===================================================== -->
+    <columnHeader>
+        <band height="30">
+
+            <!-- Cheque No -->
+            <staticText>
+                <reportElement x="0"
+                               y="0"
+                               width="120"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Cheque No]]></text>
+            </staticText>
+
+            <!-- Bank -->
+            <staticText>
+                <reportElement x="120"
+                               y="0"
+                               width="150"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Bank]]></text>
+            </staticText>
+
+            <!-- Branch -->
+            <staticText>
+                <reportElement x="270"
+                               y="0"
+                               width="150"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Branch]]></text>
+            </staticText>
+
+            <!-- MICR Code -->
+            <staticText>
+                <reportElement x="420"
+                               y="0"
+                               width="120"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[MICR Code]]></text>
+            </staticText>
+
+            <!-- Amount -->
+            <staticText>
+                <reportElement x="540"
+                               y="0"
+                               width="120"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+
+            <!-- MICR Status -->
+            <staticText>
+                <reportElement x="660"
+                               y="0"
+                               width="122"
+                               height="30"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[MICR Status]]></text>
+            </staticText>
+
+        </band>
+    </columnHeader>
+
+    <!-- =====================================================
+         DETAIL
+         ===================================================== -->
+    <detail>
+        <band height="28">
+
+            <!-- Cheque No -->
+            <textField>
+                <reportElement x="0"
+                               y="0"
+                               width="120"
+                               height="28"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{cheque_number}
+                ]]></textFieldExpression>
+            </textField>
+
+            <!-- Bank -->
+            <textField>
+                <reportElement x="120"
+                               y="0"
+                               width="150"
+                               height="28"/>
+
+                <textElement verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{bank_name}
+                ]]></textFieldExpression>
+            </textField>
+
+            <!-- Branch -->
+            <textField>
+                <reportElement x="270"
+                               y="0"
+                               width="150"
+                               height="28"/>
+
+                <textElement verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{branch_name}
+                ]]></textFieldExpression>
+            </textField>
+
+            <!-- MICR Code -->
+            <textField>
+                <reportElement x="420"
+                               y="0"
+                               width="120"
+                               height="28"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{micr_code}
+                ]]></textFieldExpression>
+            </textField>
+
+            <!-- Amount -->
+            <textField>
+                <reportElement x="540"
+                               y="0"
+                               width="120"
+                               height="28"/>
+
+                <textElement textAlignment="Right"
+                             verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{cheque_amount}
+                ]]></textFieldExpression>
+            </textField>
+
+            <!--
+                MICR Status
+                IMPORTANT:
+                style is applied to reportElement, not textField.
+            -->
+            <textField>
+                <reportElement x="660"
+                               y="0"
+                               width="122"
+                               height="28"
+                               style="MicrInvalidStyle"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle"/>
+
+                <textFieldExpression><![CDATA[
+                    $F{micr_status}
+                ]]></textFieldExpression>
+            </textField>
+
+        </band>
+    </detail>
+
+</jasperReport>

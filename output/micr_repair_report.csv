@@ -1,0 +1,5 @@
+MICR Repair Report,,,,,
+Cheque No,Bank,Branch,MICR Code,Amount,MICR Status
+CHQ10004,Axis Bank,Mapusa,403211005,95000.00,INVALID
+CHQ10008,Punjab National Bank,Margao,403024009,56000.00,INVALID
+CHQ10014,HDFC Bank,Panaji,403240002,87000.00,INVALID
