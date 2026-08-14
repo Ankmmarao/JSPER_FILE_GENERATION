@@ -383,18 +383,7 @@ public class Main {
                 // 5. BATCH SUMMARY
                 // -------------------------------------------------
 
-                System.out.println();
-                System.out.println(
-                        "5. Batch Processing Summary"
-                );
-
-
-                JasperReportRunner.generatePDF(
-                        "reports/batch_summary_report.jrxml",
-                        "output/batch_summary_report.pdf",
-                        new HashMap<>()
-                );
-
+             
 
                 // -------------------------------------------------
                 // 6. BANK SUMMARY
