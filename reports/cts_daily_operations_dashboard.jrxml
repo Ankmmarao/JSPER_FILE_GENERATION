@@ -17,7 +17,7 @@
     bottomMargin="25">
 
     <!-- ===================================================== -->
-    <!-- PARAMETER -->
+    <!-- PARAMETER                                             -->
     <!-- ===================================================== -->
 
     <parameter
@@ -26,7 +26,7 @@
 
 
     <!-- ===================================================== -->
-    <!-- MAIN QUERY -->
+    <!-- MAIN DASHBOARD QUERY                                  -->
     <!-- ===================================================== -->
 
     <queryString>
@@ -34,31 +34,35 @@
             SELECT
                 COUNT(*) AS total_cheques,
 
-                COUNT(
+                SUM(
                     CASE
                         WHEN status = 'APPROVED'
                         THEN 1
+                        ELSE 0
                     END
                 ) AS approved_cheques,
 
-                COUNT(
+                SUM(
                     CASE
                         WHEN status = 'REJECTED'
                         THEN 1
+                        ELSE 0
                     END
                 ) AS rejected_cheques,
 
-                COUNT(
+                SUM(
                     CASE
-                        WHEN micr_status = 'INVALID'
+                        WHEN micr_status = 'PENDING'
                         THEN 1
+                        ELSE 0
                     END
                 ) AS micr_repair_pending,
 
-                COUNT(
+                SUM(
                     CASE
                         WHEN cheque_amount >= 200000
                         THEN 1
+                        ELSE 0
                     END
                 ) AS high_value_cheques,
 
@@ -69,14 +73,13 @@
 
             FROM cheque_transaction
 
-            WHERE processing_date =
-                  $P{P_PROCESSING_DATE}
+            WHERE processing_date = $P{P_PROCESSING_DATE}
         ]]>
     </queryString>
 
 
     <!-- ===================================================== -->
-    <!-- FIELDS -->
+    <!-- FIELDS                                                -->
     <!-- ===================================================== -->
 
     <field
@@ -105,101 +108,31 @@
 
 
     <!-- ===================================================== -->
-    <!-- VARIABLES -->
-    <!-- ===================================================== -->
-
-    <variable
-        name="V_TOTAL_CHEQUES"
-        class="java.lang.Long"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{total_cheques}]]>
-        </variableExpression>
-    </variable>
-
-    <variable
-        name="V_APPROVED_CHEQUES"
-        class="java.lang.Long"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{approved_cheques}]]>
-        </variableExpression>
-    </variable>
-
-    <variable
-        name="V_REJECTED_CHEQUES"
-        class="java.lang.Long"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{rejected_cheques}]]>
-        </variableExpression>
-    </variable>
-
-    <variable
-        name="V_MICR_REPAIR_PENDING"
-        class="java.lang.Long"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{micr_repair_pending}]]>
-        </variableExpression>
-    </variable>
-
-    <variable
-        name="V_HIGH_VALUE_CHEQUES"
-        class="java.lang.Long"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{high_value_cheques}]]>
-        </variableExpression>
-    </variable>
-
-    <variable
-        name="V_TOTAL_PROCESSING_AMOUNT"
-        class="java.math.BigDecimal"
-        calculation="Nothing">
-        <variableExpression>
-            <![CDATA[$F{total_processing_amount}]]>
-        </variableExpression>
-    </variable>
-
-
-    <!-- ===================================================== -->
-    <!-- TITLE -->
+    <!-- TITLE                                                 -->
     <!-- ===================================================== -->
 
     <title>
 
-        <band height="70">
+        <band height="65">
 
-            <!-- Header background -->
-
-            <rectangle>
-                <reportElement
-                    x="0"
-                    y="0"
-                    width="782"
-                    height="65"
-                    backcolor="#123B63"
-                    mode="Opaque"/>
-            </rectangle>
-
-
-            <!-- Title -->
+            <!-- Main title -->
 
             <staticText>
 
                 <reportElement
-                    x="20"
-                    y="10"
-                    width="742"
-                    height="30"
-                    forecolor="#FFFFFF"/>
+                    x="0"
+                    y="0"
+                    width="782"
+                    height="35"
+                    backcolor="#163A5F"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
                     <font
                         size="22"
-                        isBold="true"/>
+                        isBold="true"
+                        pdfFontName="Helvetica-Bold"/>
 
                 </textElement>
 
@@ -210,21 +143,20 @@
             </staticText>
 
 
-            <!-- Processing Date -->
+            <!-- Processing date label -->
 
             <staticText>
 
                 <reportElement
-                    x="20"
-                    y="43"
-                    width="145"
-                    height="18"
-                    forecolor="#DCEAF7"/>
+                    x="0"
+                    y="40"
+                    width="125"
+                    height="20"/>
 
                 <textElement textAlignment="Left">
 
                     <font
-                        size="10"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
@@ -236,28 +168,27 @@
             </staticText>
 
 
-            <textField>
+            <!-- Processing date value -->
+
+            <textField
+                pattern="dd-MMM-yyyy">
 
                 <reportElement
-                    x="160"
-                    y="43"
+                    x="125"
+                    y="40"
                     width="150"
-                    height="18"
-                    forecolor="#FFFFFF"/>
+                    height="20"/>
 
-                <textElement textAlignment="Left">
+                <textElement>
 
                     <font
-                        size="10"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
 
                 <textFieldExpression>
-                    <![CDATA[
-                        new java.text.SimpleDateFormat("dd-MMM-yyyy")
-                        .format($P{P_PROCESSING_DATE})
-                    ]]>
+                    <![CDATA[$P{P_PROCESSING_DATE}]]>
                 </textFieldExpression>
 
             </textField>
@@ -268,44 +199,32 @@
 
 
     <!-- ===================================================== -->
-    <!-- KPI SECTION -->
+    <!-- KPI AREA                                              -->
     <!-- ===================================================== -->
 
-    <pageHeader>
+    <detail>
 
-        <band height="190">
+        <band height="290">
 
 
             <!-- ================================================= -->
-            <!-- CARD 1 - TOTAL CHEQUES -->
+            <!-- KPI 1 - TOTAL CHEQUES                            -->
             <!-- ================================================= -->
 
-            <rectangle>
+            <staticText>
 
                 <reportElement
                     x="0"
                     y="10"
                     width="245"
-                    height="80"
-                    backcolor="#EAF3FF"
+                    height="35"
+                    backcolor="#1F77B4"
                     mode="Opaque"/>
-
-            </rectangle>
-
-
-            <staticText>
-
-                <reportElement
-                    x="15"
-                    y="20"
-                    width="215"
-                    height="20"
-                    forecolor="#123B63"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -320,16 +239,18 @@
             <textField>
 
                 <reportElement
-                    x="15"
-                    y="43"
-                    width="215"
-                    height="35"
-                    forecolor="#123B63"/>
+                    x="0"
+                    y="45"
+                    width="245"
+                    height="65"
+                    backcolor="#EAF3FA"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="22"
+                        size="28"
                         isBold="true"/>
 
                 </textElement>
@@ -342,35 +263,23 @@
 
 
             <!-- ================================================= -->
-            <!-- CARD 2 - APPROVED -->
+            <!-- KPI 2 - APPROVED CHEQUES                         -->
             <!-- ================================================= -->
 
-            <rectangle>
+            <staticText>
 
                 <reportElement
                     x="268"
                     y="10"
                     width="245"
-                    height="80"
-                    backcolor="#E8F7EE"
+                    height="35"
+                    backcolor="#2CA02C"
                     mode="Opaque"/>
-
-            </rectangle>
-
-
-            <staticText>
-
-                <reportElement
-                    x="283"
-                    y="20"
-                    width="215"
-                    height="20"
-                    forecolor="#167A45"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -385,16 +294,18 @@
             <textField>
 
                 <reportElement
-                    x="283"
-                    y="43"
-                    width="215"
-                    height="35"
-                    forecolor="#167A45"/>
+                    x="268"
+                    y="45"
+                    width="245"
+                    height="65"
+                    backcolor="#EAF7EA"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="22"
+                        size="28"
                         isBold="true"/>
 
                 </textElement>
@@ -407,35 +318,23 @@
 
 
             <!-- ================================================= -->
-            <!-- CARD 3 - REJECTED -->
+            <!-- KPI 3 - REJECTED CHEQUES                         -->
             <!-- ================================================= -->
-
-            <rectangle>
-
-                <reportElement
-                    x="536"
-                    y="10"
-                    width="246"
-                    height="80"
-                    backcolor="#FDECEC"
-                    mode="Opaque"/>
-
-            </rectangle>
-
 
             <staticText>
 
                 <reportElement
-                    x="551"
-                    y="20"
-                    width="216"
-                    height="20"
-                    forecolor="#B42318"/>
+                    x="536"
+                    y="10"
+                    width="245"
+                    height="35"
+                    backcolor="#D62728"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -450,16 +349,18 @@
             <textField>
 
                 <reportElement
-                    x="551"
-                    y="43"
-                    width="216"
-                    height="35"
-                    forecolor="#B42318"/>
+                    x="536"
+                    y="45"
+                    width="245"
+                    height="65"
+                    backcolor="#FCEAEA"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="22"
+                        size="28"
                         isBold="true"/>
 
                 </textElement>
@@ -472,35 +373,23 @@
 
 
             <!-- ================================================= -->
-            <!-- CARD 4 - MICR REPAIR -->
+            <!-- KPI 4 - MICR REPAIR PENDING                     -->
             <!-- ================================================= -->
-
-            <rectangle>
-
-                <reportElement
-                    x="0"
-                    y="100"
-                    width="245"
-                    height="80"
-                    backcolor="#FFF6E5"
-                    mode="Opaque"/>
-
-            </rectangle>
-
 
             <staticText>
 
                 <reportElement
-                    x="15"
-                    y="110"
-                    width="215"
-                    height="20"
-                    forecolor="#B54708"/>
+                    x="0"
+                    y="130"
+                    width="245"
+                    height="35"
+                    backcolor="#FF7F0E"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -515,16 +404,18 @@
             <textField>
 
                 <reportElement
-                    x="15"
-                    y="133"
-                    width="215"
-                    height="35"
-                    forecolor="#B54708"/>
+                    x="0"
+                    y="165"
+                    width="245"
+                    height="65"
+                    backcolor="#FFF2E5"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="22"
+                        size="28"
                         isBold="true"/>
 
                 </textElement>
@@ -537,35 +428,23 @@
 
 
             <!-- ================================================= -->
-            <!-- CARD 5 - HIGH VALUE -->
+            <!-- KPI 5 - HIGH VALUE CHEQUES                       -->
             <!-- ================================================= -->
-
-            <rectangle>
-
-                <reportElement
-                    x="268"
-                    y="100"
-                    width="245"
-                    height="80"
-                    backcolor="#F1EDFF"
-                    mode="Opaque"/>
-
-            </rectangle>
-
 
             <staticText>
 
                 <reportElement
-                    x="283"
-                    y="110"
-                    width="215"
-                    height="20"
-                    forecolor="#6941C6"/>
+                    x="268"
+                    y="130"
+                    width="245"
+                    height="35"
+                    backcolor="#9467BD"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -580,16 +459,18 @@
             <textField>
 
                 <reportElement
-                    x="283"
-                    y="133"
-                    width="215"
-                    height="35"
-                    forecolor="#6941C6"/>
+                    x="268"
+                    y="165"
+                    width="245"
+                    height="65"
+                    backcolor="#F3ECF8"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="22"
+                        size="28"
                         isBold="true"/>
 
                 </textElement>
@@ -602,35 +483,23 @@
 
 
             <!-- ================================================= -->
-            <!-- CARD 6 - TOTAL PROCESSING AMOUNT -->
+            <!-- KPI 6 - TOTAL PROCESSING AMOUNT                 -->
             <!-- ================================================= -->
-
-            <rectangle>
-
-                <reportElement
-                    x="536"
-                    y="100"
-                    width="246"
-                    height="80"
-                    backcolor="#E9F8F8"
-                    mode="Opaque"/>
-
-            </rectangle>
-
 
             <staticText>
 
                 <reportElement
-                    x="551"
-                    y="110"
-                    width="216"
-                    height="20"
-                    forecolor="#087E8B"/>
+                    x="536"
+                    y="130"
+                    width="245"
+                    height="35"
+                    backcolor="#17A2B8"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
                     <font
-                        size="11"
+                        size="14"
                         isBold="true"/>
 
                 </textElement>
@@ -642,72 +511,84 @@
             </staticText>
 
 
-            <textField>
+            <textField
+                pattern="#,##0.00">
 
                 <reportElement
-                    x="551"
-                    y="133"
-                    width="216"
-                    height="35"
-                    forecolor="#087E8B"/>
+                    x="536"
+                    y="165"
+                    width="245"
+                    height="65"
+                    backcolor="#E8F7FA"
+                    mode="Opaque"/>
 
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
 
                     <font
-                        size="18"
+                        size="20"
                         isBold="true"/>
 
                 </textElement>
 
                 <textFieldExpression>
-                    <![CDATA[
-                        $F{total_processing_amount}
-                    ]]>
+                    <![CDATA[$F{total_processing_amount}]]>
                 </textFieldExpression>
-
-                <pattern>
-                    <![CDATA[#,##0.00]]>
-                </pattern>
 
             </textField>
 
-        </band>
 
-    </pageHeader>
-
-
-    <!-- ===================================================== -->
-    <!-- DAILY PROCESSING SUMMARY -->
-    <!-- ===================================================== -->
-
-    <detail>
-
-        <band height="260">
-
-
-            <!-- Summary Header -->
-
-            <rectangle>
-
-                <reportElement
-                    x="0"
-                    y="5"
-                    width="375"
-                    height="40"
-                    backcolor="#123B63"
-                    mode="Opaque"/>
-
-            </rectangle>
-
+            <!-- ================================================= -->
+            <!-- DASHBOARD INFORMATION                            -->
+            <!-- ================================================= -->
 
             <staticText>
 
                 <reportElement
-                    x="15"
-                    y="15"
-                    width="345"
-                    height="20"
-                    forecolor="#FFFFFF"/>
+                    x="0"
+                    y="250"
+                    width="782"
+                    height="35"
+                    backcolor="#163A5F"
+                    mode="Opaque"/>
+
+                <textElement textAlignment="Center"
+                             verticalAlignment="Middle">
+
+                    <font
+                        size="16"
+                        isBold="true"/>
+
+                </textElement>
+
+                <text>
+                    <![CDATA[CTS DAILY PROCESSING OVERVIEW]]>
+                </text>
+
+            </staticText>
+
+        </band>
+
+    </detail>
+
+
+    <!-- ===================================================== -->
+    <!-- SUMMARY                                              -->
+    <!-- ===================================================== -->
+
+    <summary>
+
+        <band height="100">
+
+            <staticText>
+
+                <reportElement
+                    x="0"
+                    y="10"
+                    width="782"
+                    height="25"
+                    backcolor="#F2F2F2"
+                    mode="Opaque"/>
 
                 <textElement textAlignment="Center">
 
@@ -718,35 +599,24 @@
                 </textElement>
 
                 <text>
-                    <![CDATA[DAILY PROCESSING SUMMARY]]>
+                    <![CDATA[Daily Processing Summary]]>
                 </text>
 
             </staticText>
 
 
-            <!-- ================================================= -->
-            <!-- SUMMARY LABELS -->
-            <!-- ================================================= -->
-
             <staticText>
 
                 <reportElement
                     x="0"
-                    y="55"
-                    width="72"
-                    height="35"
-                    backcolor="#EAF3FF"
-                    mode="Opaque"/>
+                    y="45"
+                    width="150"
+                    height="25"/>
 
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
+                <textElement textAlignment="Center">
 
                     <font
-                        size="8"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
@@ -758,149 +628,18 @@
             </staticText>
 
 
-            <staticText>
-
-                <reportElement
-                    x="72"
-                    y="55"
-                    width="75"
-                    height="35"
-                    backcolor="#E8F7EE"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="8"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[APPROVED]]>
-                </text>
-
-            </staticText>
-
-
-            <staticText>
-
-                <reportElement
-                    x="147"
-                    y="55"
-                    width="75"
-                    height="35"
-                    backcolor="#FDECEC"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="8"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[REJECTED]]>
-                </text>
-
-            </staticText>
-
-
-            <staticText>
-
-                <reportElement
-                    x="222"
-                    y="55"
-                    width="78"
-                    height="35"
-                    backcolor="#FFF6E5"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="8"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[MICR PENDING]]>
-                </text>
-
-            </staticText>
-
-
-            <staticText>
-
-                <reportElement
-                    x="300"
-                    y="55"
-                    width="75"
-                    height="35"
-                    backcolor="#F1EDFF"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="8"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[HIGH VALUE]]>
-                </text>
-
-            </staticText>
-
-
-            <!-- ================================================= -->
-            <!-- SUMMARY VALUES -->
-            <!-- ================================================= -->
-
             <textField>
 
                 <reportElement
-                    x="0"
-                    y="90"
-                    width="72"
-                    height="45"
-                    backcolor="#F8FBFF"
-                    mode="Opaque"/>
+                    x="150"
+                    y="45"
+                    width="100"
+                    height="25"/>
 
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
+                <textElement textAlignment="Center">
 
                     <font
-                        size="14"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
@@ -912,25 +651,41 @@
             </textField>
 
 
+            <staticText>
+
+                <reportElement
+                    x="250"
+                    y="45"
+                    width="100"
+                    height="25"/>
+
+                <textElement textAlignment="Center">
+
+                    <font
+                        size="11"
+                        isBold="true"/>
+
+                </textElement>
+
+                <text>
+                    <![CDATA[APPROVED]]>
+                </text>
+
+            </staticText>
+
+
             <textField>
 
                 <reportElement
-                    x="72"
-                    y="90"
-                    width="75"
-                    height="45"
-                    backcolor="#F6FCF8"
-                    mode="Opaque"/>
+                    x="350"
+                    y="45"
+                    width="100"
+                    height="25"/>
 
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
+                <textElement textAlignment="Center">
 
                     <font
-                        size="14"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
@@ -942,25 +697,41 @@
             </textField>
 
 
+            <staticText>
+
+                <reportElement
+                    x="450"
+                    y="45"
+                    width="100"
+                    height="25"/>
+
+                <textElement textAlignment="Center">
+
+                    <font
+                        size="11"
+                        isBold="true"/>
+
+                </textElement>
+
+                <text>
+                    <![CDATA[REJECTED]]>
+                </text>
+
+            </staticText>
+
+
             <textField>
 
                 <reportElement
-                    x="147"
-                    y="90"
-                    width="75"
-                    height="45"
-                    backcolor="#FFF8F8"
-                    mode="Opaque"/>
+                    x="550"
+                    y="45"
+                    width="100"
+                    height="25"/>
 
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
+                <textElement textAlignment="Center">
 
                     <font
-                        size="14"
+                        size="11"
                         isBold="true"/>
 
                 </textElement>
@@ -972,191 +743,15 @@
             </textField>
 
 
-            <textField>
-
-                <reportElement
-                    x="222"
-                    y="90"
-                    width="78"
-                    height="45"
-                    backcolor="#FFFBF4"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="14"
-                        isBold="true"/>
-
-                </textElement>
-
-                <textFieldExpression>
-                    <![CDATA[$F{micr_repair_pending}]]>
-                </textFieldExpression>
-
-            </textField>
-
-
-            <textField>
-
-                <reportElement
-                    x="300"
-                    y="90"
-                    width="75"
-                    height="45"
-                    backcolor="#FAF8FF"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="14"
-                        isBold="true"/>
-
-                </textElement>
-
-                <textFieldExpression>
-                    <![CDATA[$F{high_value_cheques}]]>
-                </textFieldExpression>
-
-            </textField>
-
-
-            <!-- ================================================= -->
-            <!-- OVERVIEW -->
-            <!-- ================================================= -->
-
-            <rectangle>
-
-                <reportElement
-                    x="405"
-                    y="5"
-                    width="377"
-                    height="40"
-                    backcolor="#123B63"
-                    mode="Opaque"/>
-
-            </rectangle>
-
-
             <staticText>
 
                 <reportElement
-                    x="420"
-                    y="15"
-                    width="347"
-                    height="20"
-                    forecolor="#FFFFFF"/>
-
-                <textElement textAlignment="Center">
-
-                    <font
-                        size="12"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[CTS DAILY PROCESSING OVERVIEW]]>
-                </text>
-
-            </staticText>
-
-
-            <!-- ================================================= -->
-            <!-- PROCESSING AMOUNT -->
-            <!-- ================================================= -->
-
-            <staticText>
-
-                <reportElement
-                    x="405"
-                    y="60"
-                    width="175"
-                    height="25"
-                    backcolor="#E9F8F8"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="9"
-                        isBold="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[TOTAL PROCESSING AMOUNT]]>
-                </text>
-
-            </staticText>
-
-
-            <textField>
-
-                <reportElement
-                    x="580"
-                    y="60"
-                    width="202"
-                    height="25"
-                    backcolor="#F8FFFF"
-                    mode="Opaque"/>
-
-                <box>
-                    <pen lineWidth="0.5"/>
-                </box>
-
-                <textElement textAlignment="Right"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="11"
-                        isBold="true"/>
-
-                </textElement>
-
-                <textFieldExpression>
-                    <![CDATA[
-                        $F{total_processing_amount}
-                    ]]>
-                </textFieldExpression>
-
-                <pattern>
-                    <![CDATA[#,##0.00]]>
-                </pattern>
-
-            </textField>
-
-
-            <!-- ================================================= -->
-            <!-- STATUS VISUAL LEGEND -->
-            <!-- ================================================= -->
-
-            <staticText>
-
-                <reportElement
-                    x="405"
-                    y="100"
-                    width="377"
+                    x="650"
+                    y="45"
+                    width="132"
                     height="25"/>
 
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
+                <textElement textAlignment="Center">
 
                     <font
                         size="10"
@@ -1165,219 +760,14 @@
                 </textElement>
 
                 <text>
-                    <![CDATA[PROCESSING STATUS]]>
+                    <![CDATA[HIGH VALUE]]>
                 </text>
 
             </staticText>
 
-
-            <!-- Total dot -->
-
-            <ellipse>
-
-                <reportElement
-                    x="425"
-                    y="140"
-                    width="18"
-                    height="18"
-                    backcolor="#2F80ED"
-                    mode="Opaque"/>
-
-            </ellipse>
-
-
-            <staticText>
-
-                <reportElement
-                    x="450"
-                    y="138"
-                    width="90"
-                    height="22"/>
-
-                <textElement verticalAlignment="Middle">
-
-                    <font size="9"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[Total]]>
-                </text>
-
-            </staticText>
-
-
-            <!-- Approved dot -->
-
-            <ellipse>
-
-                <reportElement
-                    x="550"
-                    y="140"
-                    width="18"
-                    height="18"
-                    backcolor="#27AE60"
-                    mode="Opaque"/>
-
-            </ellipse>
-
-
-            <staticText>
-
-                <reportElement
-                    x="575"
-                    y="138"
-                    width="90"
-                    height="22"/>
-
-                <textElement verticalAlignment="Middle">
-
-                    <font size="9"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[Approved]]>
-                </text>
-
-            </staticText>
-
-
-            <!-- Rejected dot -->
-
-            <ellipse>
-
-                <reportElement
-                    x="675"
-                    y="140"
-                    width="18"
-                    height="18"
-                    backcolor="#EB5757"
-                    mode="Opaque"/>
-
-            </ellipse>
-
-
-            <staticText>
-
-                <reportElement
-                    x="700"
-                    y="138"
-                    width="75"
-                    height="22"/>
-
-                <textElement verticalAlignment="Middle">
-
-                    <font size="9"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[Rejected]]>
-                </text>
-
-            </staticText>
-
-
-            <!-- Footer note -->
-
-            <staticText>
-
-                <reportElement
-                    x="405"
-                    y="175"
-                    width="377"
-                    height="25"
-                    forecolor="#667085"/>
-
-                <textElement textAlignment="Center"
-                             verticalAlignment="Middle">
-
-                    <font
-                        size="8"
-                        isItalic="true"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[CTS Daily Processing Overview]]>
-                </text>
-
-            </staticText>
 
         </band>
 
-    </detail>
-
-
-    <!-- ===================================================== -->
-    <!-- FOOTER -->
-    <!-- ===================================================== -->
-
-    <pageFooter>
-
-        <band height="30">
-
-            <line>
-
-                <reportElement
-                    x="0"
-                    y="0"
-                    width="782"
-                    height="1"
-                    forecolor="#D0D5DD"/>
-
-            </line>
-
-
-            <staticText>
-
-                <reportElement
-                    x="0"
-                    y="8"
-                    width="400"
-                    height="18"
-                    forecolor="#667085"/>
-
-                <textElement textAlignment="Left">
-
-                    <font size="8"/>
-
-                </textElement>
-
-                <text>
-                    <![CDATA[CTS Reporting System]]>
-                </text>
-
-            </staticText>
-
-
-            <textField>
-
-                <reportElement
-                    x="600"
-                    y="8"
-                    width="182"
-                    height="18"
-                    forecolor="#667085"/>
-
-                <textElement textAlignment="Right">
-
-                    <font size="8"/>
-
-                </textElement>
-
-                <textFieldExpression>
-                    <![CDATA[
-                        "Page " + $V{PAGE_NUMBER}
-                    ]]>
-                </textFieldExpression>
-
-            </textField>
-
-        </band>
-
-    </pageFooter>
-
+    </summary>
 
 </jasperReport>
