@@ -1,0 +1,20 @@
+"
+",,,,,,
+"
+                    ","
+                    ","
+                    Bank
+",,"
+                    ","
+                    Status
+",
+CHQ10005,Thomas Mathew,Federal Bank,,350000.00,APPROVED,
+CHQ10007,Arjun Singh,Bank of Baroda,,220000.00,APPROVED,
+CHQ10010,Sara Khan,ICICI Bank,,425000.00,REJECTED,
+CHQ10012,Lakshmi Pillai,Federal Bank,,275000.00,APPROVED,
+CHQ10015,Joseph George,SBI,,510000.00,APPROVED,
+,,,"
+                    Total High Value ",,,5
+,,,"
+                    Total Amount:
+",,,1780000.00

@@ -7,6 +7,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
+
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 
@@ -16,10 +17,7 @@ import java.util.Map;
 
 public class JasperReportRunner {
 
-    // =========================================================
-    // CSV REPORT GENERATION
-    // =========================================================
-
+    
     public static void generateCSV(
             String jrxmlPath,
             String outputPath,
@@ -87,6 +85,7 @@ public class JasperReportRunner {
                 exporter.setExporterInput(
                         new SimpleExporterInput(print)
                 );
+                
 
                 exporter.setExporterOutput(
                         new SimpleWriterExporterOutput(
@@ -125,4 +124,9 @@ public class JasperReportRunner {
             e.printStackTrace();
         }
     }
+
+	public static void generateText() {
+		// TODO Auto-generated method stub
+		
+	}
 }
